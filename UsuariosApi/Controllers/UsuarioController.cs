@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UsuariosApi.Data.Dtos;
 using UsuariosApi.Services;
 
@@ -16,6 +17,7 @@ namespace UsuariosApi.Controllers
         }
 
         [HttpPost("cadastro")]
+        [Authorize]
         public async Task<IActionResult> CadastraUsuario(CreateUsuarioDto dto)
         {
             await _usuarioService.CadastraAsync(dto);

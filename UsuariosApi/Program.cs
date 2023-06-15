@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using UsuariosApi.Authorization;
 using UsuariosApi.Data;
@@ -33,7 +34,32 @@ builder.Services.AddSingleton<IAuthorizationHandler, IdadeAuthorization>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1",
+        new OpenApiInfo
+        {
+            Title = "API Usuários",
+            Description = "Aprendendo conceitos de API com JWT, Claims, Client Secret",
+            Version = $"V1 - {DateTime.Now.ToUniversalTime().AddHours(-3).ToString("dd/MM/yyyy HH:mm")}"
+        });
+    var securityScheme = new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter JWT with Bearer into field",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+    c.AddSecurityDefinition("Bearer", securityScheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement { { securityScheme, Array.Empty<string>() } });
+});
 
 builder.Services.AddAuthentication(options =>
 {
